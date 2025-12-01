@@ -1,0 +1,16 @@
+# Ignore input text files for each day
+**/input.txt
+# Python bytecode
+**pycache**/
+*.py[cod]
+# Virtual environment
+venv/
+.venv/
+env/
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+# Rope project settings
+.ropeproject/
