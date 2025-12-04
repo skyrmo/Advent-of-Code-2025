@@ -1,4 +1,4 @@
-import collections
+# import collections
 import os
 
 
@@ -30,11 +30,18 @@ def get_factors(n):
     return sorted(factors)[:-1]
 
 
+factor_cache = {}
+
+
 def check(num: str):
     n = len(num)
-    factors = get_factors(n)
 
-    # print(num, n, factors)
+    factors = []
+    if n in factor_cache:
+        factors = factor_cache[n]
+    else:
+        factors = get_factors(n)
+        factor_cache[n] = factors
 
     is_repeated = False
 
