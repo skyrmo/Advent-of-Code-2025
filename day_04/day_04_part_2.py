@@ -1,4 +1,3 @@
-import collections
 import os
 
 
@@ -9,7 +8,7 @@ def parse_input(file_path):
         data = file.read().strip()
 
         # 2. Read as a list of lines
-        # return data.split('\n')
+        return data.split("\n")
 
         # 3. Read as a list of integers
         # return [int(line) for line in data.split('\n')]
