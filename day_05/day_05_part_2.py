@@ -22,39 +22,29 @@ def parse_input(file_path):
 
 def solve(input_data):
     range_data = input_data[0].split("\n")
-    food_ids = [int(x) for x in input_data[1].split("\n")]
     ranges = []
+    result = 0
 
     for r in range_data:
         s, e = r.split("-")
         ranges.append((int(s), int(e)))
 
-    result = 0
+    ranges.sort(key=lambda x: (x[0], x[1]))
 
-    for f_id in food_ids:
-        for start, end in ranges:
-            if start <= f_id <= end:
-                # print(start, f_id, end)
-                result += 1
-                break
+    filtered_ranges = [[ranges[0][0], ranges[0][1]]]
+
+    for start, end in ranges[1:]:
+        prev_end = filtered_ranges[-1][1]
+
+        if start > prev_end:
+            filtered_ranges.append([start, end])
+        else:
+            filtered_ranges[-1][1] = max(prev_end, end)
+
+    for start, end in filtered_ranges:
+        result += end - start + 1
 
     return result
-
-    # ranges.sort(key=lambda x: (x[0], x[1]))
-    # filtered_ranges = [[ranges[0][0], ranges[0][1]]]
-    # for i in range(1, len(ranges)):
-    #     prev_start, prev_end = filtered_ranges[-1]
-    #     start, end = ranges[i]
-
-    #     if start > prev_end:
-    #         filtered_ranges.append([start, end])
-    #         continue
-
-    #     if start <= prev_end and end > prev_end:
-    #         filtered_ranges[-1][1] = end
-    #         continue
-
-    # print(len(ranges), len(filtered_ranges))
 
 
 def main():
