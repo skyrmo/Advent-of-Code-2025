@@ -1,15 +1,14 @@
-
 import os
-import collections
+
 
 def parse_input(file_path):
     # Parse the input file
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         # Read the entire file
         data = file.read().strip()
 
         # 2. Read as a list of lines
-        # return data.split('\n')
+        return data.split("\n")
 
         # 3. Read as a list of integers
         # return [int(line) for line in data.split('\n')]
@@ -19,23 +18,75 @@ def parse_input(file_path):
 
         return data
 
+
 def solve(input_data):
-    # Implement solution here
-    pass
+    row_len = max([len(x) for x in input_data])
+
+    grid = []
+    for line in input_data:
+        row = [" "] * row_len
+        for i, c in enumerate(line):
+            row[i] = c
+        grid.append(row)
+
+    h, w = len(grid), len(grid[0])
+    seen_nums = []
+    result = 0
+
+    for c in range(w - 1, -1, -1):
+        num = ""
+        for r in range(h):
+            if grid[r][c] == " ":
+                continue
+
+            if grid[r][c] == "+":
+                if num:
+                    seen_nums.append(int(num))
+
+                if seen_nums:
+                    result += sum(seen_nums)
+
+                seen_nums = []
+                num = ""
+                break
+
+            if grid[r][c] == "*":
+                if num:
+                    seen_nums.append(int(num))
+
+                if seen_nums:
+                    product = seen_nums[0]
+                    for num in seen_nums[1:]:
+                        product *= num
+                    result += product
+
+                seen_nums = []
+                num = ""
+                break
+
+            num += grid[r][c]
+
+        if num:
+            seen_nums.append(int(num))
+
+    return result
+
 
 def main():
     # Get the directory of the current script
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Construct the input file path relative to the script's location
-    input_path = os.path.join(script_dir, 'input.txt')
+    input_path = os.path.join(script_dir, "input.txt")
+    # input_path = os.path.join(script_dir, "sample_input.txt")
 
     # Parse input
     parsed_input = parse_input(input_path)
 
     # Solve and print the solution
     result = solve(parsed_input)
-    print(f"Solution for Day 06, Part Two: {result}")
+    print(f"Solution for Day 06, Part One: {result}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
