@@ -1,5 +1,3 @@
-import collections
-import math
 import os
 
 
@@ -29,7 +27,7 @@ class Box:
         self.z = z
 
     def get_dist(self, neighbor: "Box"):
-        return math.sqrt(
+        return (
             (self.x - neighbor.x) ** 2
             + (self.y - neighbor.y) ** 2
             + (self.z - neighbor.z) ** 2
@@ -43,6 +41,7 @@ class UnionFind:
     def __init__(self, n):
         self.par = {}  # stores the parent of the tree
         self.rank = {}  # this is essentially the height of the tree
+        self.components = n
 
         # init each node as its own parent with a rank of 0
         for i in range(n):
@@ -64,6 +63,8 @@ class UnionFind:
         if p1 == p2:
             return False
 
+        self.components -= 1
+
         if self.rank[p1] > self.rank[p2]:
             self.par[p2] = p1
         elif self.rank[p1] < self.rank[p2]:
@@ -74,15 +75,7 @@ class UnionFind:
         return True
 
     def count_components(self):
-        roots = []
-        for i in self.par.keys():
-            root = self.find(i)
-            roots.append(root)
-
-        size_counter = collections.Counter(roots)
-        sizes = list(size_counter.values())
-
-        return len(sizes)
+        return self.components
 
     def __repr__(self):
         return f"UnionFind({self.par})"
