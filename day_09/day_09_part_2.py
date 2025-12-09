@@ -34,36 +34,36 @@ class Point:
 
 
 def compress(points):
+    # sort points by col index
     points.sort(key=lambda p: (p.c, p.r))
-    compressed = -1
+    compressed = -1  # will be the new compressed index
     prev = -1
 
     for i, point in enumerate(points):
+        # handles points on the same col
         if point.c > prev:
             compressed += 2
             prev = point.c
         point.nc = compressed
 
+    # sort points by row index
     points.sort(key=lambda p: (p.r, p.c))
-    compressed = -1
+    compressed = -1  # will be the new compressed index
     prev = -1
 
     for i, point in enumerate(points):
+        # handles points on the same row
         if point.r > prev:
             compressed += 2
             prev = point.r
         point.nr = compressed
 
 
-def write_grid_to_file(grid, file_path):
-    with open(file_path, "w") as f:
-        for row in grid:
-            f.write("".join(row) + "\n")
-    print(f"Grid written to: {file_path}")
-
-
 def create_edges(points):
+    # important to put points back into original order
     points.sort(key=lambda p: p.idx)
+
+    # handles wrapping here to avoid having towrite ligic.
     edges = [(points[-1], points[0])]
     for i in range(1, len(points)):
         edges.append((points[i - 1], points[i]))
@@ -72,13 +72,12 @@ def create_edges(points):
 
 
 def create_grid(points, edges):
+    # +2 in order to leave a one cell gap around the outside of the polygon
     h = max([p.nr for p in points]) + 2
     w = max([p.nc for p in points]) + 2
 
     # Create Grid
     grid = [["."] * (w) for r in range(h)]
-
-    points.sort(key=lambda p: p.idx)
 
     for p1, p2 in edges:
         grid[p1.nr][p1.nc] = "#"
@@ -137,6 +136,7 @@ def solve(input_data):
     n = len(points)
 
     compress(points)
+    result = 0
 
     edges = create_edges(points)
 
@@ -144,40 +144,48 @@ def solve(input_data):
 
     outside_cells = flood_fill(grid)
 
-    result = 0
-
     squares = []
-
     for i in range(n):
         p1 = points[i]
         for j in range(i + 1, n):
             p2 = points[j]
 
-            min_r = min(p1.r, p2.r)
-            max_r = max(p1.r, p2.r)
-            min_c = min(p1.c, p2.c)
-            max_c = max(p1.c, p2.c)
+            min_r, max_r = min(p1.r, p2.r), max(p1.r, p2.r)
+            min_c, max_c = min(p1.c, p2.c), max(p1.c, p2.c)
 
             squares.append((p1, p2, (max_r - min_r + 1) * (max_c - min_c + 1)))
 
     for square in squares:
         p1, p2, original_area = square
 
-        if original_area < result:
+        if original_area <= result:
             continue
 
-        min_r = min(p1.nr, p2.nr)
-        max_r = max(p1.nr, p2.nr)
-        min_c = min(p1.nc, p2.nc)
-        max_c = max(p1.nc, p2.nc)
+        min_r, max_r = min(p1.nr, p2.nr), max(p1.nr, p2.nr)
+        min_c, max_c = min(p1.nc, p2.nc), max(p1.nc, p2.nc)
 
         is_valid = True
 
-        for r in range(min_r, max_r + 1):
+        # Check just the top row and bottom row
+        for r in [min_r, max_r]:
             for c in range(min_c, max_c + 1):
                 if (r, c) in outside_cells:
                     is_valid = False
                     break
+
+            if not is_valid:
+                break
+
+        if not is_valid:
+            continue
+
+        # check just the left and right side
+        for c in [min_c, max_c]:
+            for r in range(min_r, max_r + 1):
+                if (r, c) in outside_cells:
+                    is_valid = False
+                    break
+
             if not is_valid:
                 break
 
@@ -185,11 +193,6 @@ def solve(input_data):
             result = max(result, original_area)
 
     return result
-
-    # # write grid to file for inspection
-    # script_dir = os.path.dirname(os.path.abspath(__file__))
-    # output_path = os.path.join(script_dir, "grid_output.txt")
-    # write_grid_to_file(grid, output_path)
 
 
 def main():
