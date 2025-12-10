@@ -36,25 +36,25 @@ class Point:
 def compress(points):
     # sort points by col index
     points.sort(key=lambda p: (p.c, p.r))
-    compressed = -1  # will be the new compressed index
+    compressed = 0  # will be the new compressed index
     prev = -1
 
     for i, point in enumerate(points):
         # handles points on the same col
         if point.c > prev:
-            compressed += 2
+            compressed += 2  # increment by 2 instead of one
             prev = point.c
         point.nc = compressed
 
     # sort points by row index
     points.sort(key=lambda p: (p.r, p.c))
-    compressed = -1  # will be the new compressed index
+    compressed = 0  # will be the new compressed index
     prev = -1
 
     for i, point in enumerate(points):
         # handles points on the same row
         if point.r > prev:
-            compressed += 2
+            compressed += 1
             prev = point.r
         point.nr = compressed
 
@@ -109,7 +109,6 @@ def flood_fill(grid):
 
     while q:
         r, c = q.popleft()
-        grid[r][c] = "*"
         for nr, nc in [(r - 1, c), (r, c + 1), (r + 1, c), (r, c - 1)]:
             if not ((0 <= nr < h) and (0 <= nc < w)):
                 continue
@@ -120,8 +119,8 @@ def flood_fill(grid):
             if (nr, nc) in outside_cells:
                 continue
 
-            outside_cells.add((nr, nc))
             q.append((nr, nc))
+            outside_cells.add((nr, nc))
 
     return outside_cells
 
