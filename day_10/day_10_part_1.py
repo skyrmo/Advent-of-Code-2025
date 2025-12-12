@@ -1,7 +1,7 @@
 import os
 import re
 from collections import deque
-from typing import Dict, List
+from typing import List
 
 
 def parse_input(file_path):
